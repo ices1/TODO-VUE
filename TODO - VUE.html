@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TODO - VUE</title>
+    <style>
+        .iscompleted .content{
+            text-decoration: line-through;
+            color: #999;
+        }
+    </style>
+    <script src="../vue.js"></script>
+    <!-- <script src="https://unpkg.com/vue@2.5.17/dist/vue.js"></script> -->
+</head>
+<body>
+    <div id="app">
+        <h1>TODO - VUE</h1>
+
+        <!-- 输入区 -->
+        <div class="header">
+            <div class="allCompleted">
+                <input type="checkbox" id="allCompleted" 
+                    :checked='isAllCompleted'
+                    @click='allCompleted'>
+                <label for="allCompleted">allCompleted</label>
+            </div>
+            <div class="userInput">
+                <!-- <input type="text" placeholder="what needs to be dones?"  -->
+                <input type="text"
+                @keyup.enter="addTodo" v-model.trim='inputVal'>
+            </div>
+        </div>
+
+        <!-- 内容区 -->
+        <div class="wrap">
+            <ul>
+                <li v-for='(item, index) of showItems' :class='{iscompleted: item.done}'>
+                    <label><input type="checkbox" :checked='item.done' v-model='item.done'></label>
+                    <span class="content">{{item.content}}</span>
+                    <span class="delete" @click='deleteItem(index)'> X </span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 选项栏 -->
+        <div class="menu">
+            <div class="leftItems">
+                <span class="leftItemsNum">{{leftItemsNum}}</span>
+                item<span class="leftItems">{{itemPlural}} </span> left
+            </div>
+            <div class="selectMenu">
+                <label><input type="radio" v-model='itemCategory' value="all" class="selectAll">All</label>
+                <label><input type="radio" v-model='itemCategory' value="active" class="selectActive">Active</label>
+                <label><input type="radio" v-model='itemCategory' value="completed" class="selectCompleted">Completed</label>
+            </div>
+            <div class="clearAll">
+                <button v-show='showClearAllComp' @click='clearAllComp'>clearAllCompleted</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                items:  [{
+                    content: '001',
+                    done: false,
+                }, {
+                    content: '002',
+                    done: false,
+                }, {
+                    content: '003',
+                    done: true,
+                }],
+                inputVal: '',
+                itemCategory: 'all'
+            },
+            methods: {
+                addTodo () {
+                    console.log('addTodo')
+                    if (this.inputVal) {
+                        this.items.push({
+                            content: this.inputVal,
+                            done: false
+                        })
+                        this.inputVal = ''
+                    }
+                },
+                deleteItem (index) {
+                    console.log('deleteItem')
+                    this.items.splice(index, 1)
+                },
+                clearAllComp () {
+                    this.items = this.items.filter(it => !it.done)
+                },
+                allCompleted () {
+                    if (this.isAllCompleted) {
+                        this.items.forEach(it => it.done = false)
+                    } else {
+                        this.items.forEach(it => it.done = true)
+                    }
+                }
+
+            },
+            computed: {
+                showItems () {
+                    // this.items
+                    if (this.itemCategory == 'active') { 
+                        console.log('computed active')
+                        return this.items.filter(it => it.done == false)
+                        // return this.items.filter(it => !it.done)
+                    } else if (this.itemCategory == 'completed') {
+                        console.log('computed completed')
+                        return this.items.filter(it => it.done)
+                    } else { 
+                        console.log('computed all')
+                        return this.items
+                    }
+                },
+                leftItemsNum () {
+                    return this.items.filter(it => !it.done).length
+                },
+                itemPlural () {
+                    return this.items.filter(it => !it.done).length > 1 ? 's' : ' '
+                },
+                showClearAllComp () {
+                    return this.items.filter(it => it.done).length > 0
+                },
+                isAllCompleted () {
+                    return this.items.every(it => it.done) && this.items.length > 0
+                }
+            }
+        })
+    </script>
+</body>
+</html>
