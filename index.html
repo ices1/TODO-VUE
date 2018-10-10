@@ -133,11 +133,6 @@
                     if (str) {
                         this.editing = -1
                     }
-                    this.saveToStore()
-                },
-                saveToStore () {
-                    console.log('%c items is changing...','background:#000;color:yellow')
-                    window.localStorage.setItem('todos', JSON.stringify(this.items))
                 }
 
             },
@@ -171,15 +166,19 @@
                 
             },
             watch: {
-                items () {
-                    this.saveToStore()
+                items: {
+                    deep: true,
+                    handler () {
+                        console.log('%c items is changing...','background:#000;color:yellow')
+                        window.localStorage.setItem('todos', JSON.stringify(this.items))
+                    }
                 }
             },
             mounted () {
-                let stroe = window.localStorage.getItem('todos')
+                let store = window.localStorage.getItem('todos')
 
                 if (window.localStorage.getItem('todos')) {
-                    this.items = JSON.parse(stroe)
+                    this.items = JSON.parse(store)
                 }
             }
         })
