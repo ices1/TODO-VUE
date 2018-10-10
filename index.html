@@ -9,7 +9,7 @@
             color: #999;
         }
     </style>
-    <!-- <script src="../vue.js"></script> -->
+    <!-- <script src="../../../vue.js"></script> -->
     <script src="https://unpkg.com/vue@2.5.17/dist/vue.js"></script>
 </head>
 <body>
@@ -34,10 +34,16 @@
         <!-- 内容区 -->
         <div class="wrap">
             <ul>
-                <li v-for='(item, index) of showItems' :class='{iscompleted: item.done}'>
+                <li v-for='(item, index) of showItems' :key="item.id" :class='{iscompleted: item.done}'>
                     <label><input type="checkbox" :checked='item.done' v-model='item.done'></label>
-                    <span class="content">{{item.content}}</span>
-                    <span class="delete" @click='deleteItem(index)'> X </span>
+                    <span class="content" @dblclick='editContent(index)' v-show='!isEditing(index)'>{{item.content}}</span>
+                    <input type="text" class="edit-content" 
+                        v-if='isEditing(index)' 
+                        v-model='item.content'
+                        @blur='saveEditing(item)' 
+                        @keyup.enter='saveEditing(item)'
+                        v-focus>
+                    <span class="delete" @click='deleteItem(item)'> X </span>
                 </li>
             </ul>
         </div>
@@ -60,35 +66,48 @@
     </div>
 
     <script>
+        Vue.directive('focus', {
+          // 当被绑定的元素插入到 DOM 中时……
+          inserted: function (el) {
+            // 聚焦元素
+            el.focus()
+          }
+        })
+
+
         let vm = new Vue({
             el: '#app',
             data: {
-                items:  [{
-                    content: '001',
-                    done: false,
-                }, {
-                    content: '002',
-                    done: false,
-                }, {
-                    content: '003',
-                    done: true,
-                }],
+                items: [],
+                // items:  [{
+                //     content: '001',
+                //     done: false,
+                // }, {
+                //     content: '002',
+                //     done: false,
+                // }, {
+                //     content: '003',
+                //     done: true,
+                // }],
                 inputVal: '',
-                itemCategory: 'all'
+                itemCategory: 'all',
+                editing: -1
             },
             methods: {
                 addTodo () {
                     console.log('addTodo')
                     if (this.inputVal) {
                         this.items.push({
+                            id: Number(new Date()),
                             content: this.inputVal,
                             done: false
                         })
                         this.inputVal = ''
                     }
                 },
-                deleteItem (index) {
+                deleteItem (item) {
                     console.log('deleteItem')
+                    let index = this.items.indexOf(item)
                     this.items.splice(index, 1)
                 },
                 clearAllComp () {
@@ -100,6 +119,25 @@
                     } else {
                         this.items.forEach(it => it.done = true)
                     }
+                },
+                editContent (index) {
+                    if (this.editing == -1) {
+                        this.editing = index
+                    }
+                },
+                isEditing (index) {
+                    return index == this.editing
+                },
+                saveEditing (item) {
+                    let str = item.content.trim()
+                    if (str) {
+                        this.editing = -1
+                    }
+                    this.saveToStore()
+                },
+                saveToStore () {
+                    console.log('%c items is changing...','background:#000;color:yellow')
+                    window.localStorage.setItem('todos', JSON.stringify(this.items))
                 }
 
             },
@@ -129,6 +167,19 @@
                 },
                 isAllCompleted () {
                     return this.items.every(it => it.done) && this.items.length > 0
+                },
+                
+            },
+            watch: {
+                items () {
+                    this.saveToStore()
+                }
+            },
+            mounted () {
+                let stroe = window.localStorage.getItem('todos')
+
+                if (window.localStorage.getItem('todos')) {
+                    this.items = JSON.parse(stroe)
                 }
             }
         })
