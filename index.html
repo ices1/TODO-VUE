@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>TODO - VUE</title>
@@ -8,7 +9,7 @@
   <style>
 
 
-  body{
+    body{
     background-color: #41b883;
     font: 16px 'Helvetica Neue', Helvetica, Arial, sans-serif;
     margin: 0;
@@ -39,7 +40,7 @@
   }
   .todos  {
     box-shadow: 1px 3px 5px #fff;
-    width: 100%; 
+    width: 100%;
     max-width: 550px;
     /*居中对齐*/
     left: 50%;
@@ -70,7 +71,7 @@
     line-height: 70px;
     padding: 0;
     margin: 0;
-    box-shadow: 0 -1px 3px 1px #3333; 
+    box-shadow: 0 -1px 3px 1px #3333;
   }
   #list .delete{
     visibility: hidden;
@@ -109,7 +110,7 @@
   #userInput, #list li{
     height: 70px;
     border: 1px #3333;
-    box-shadow: 0 -1px 1px #3333; 
+    box-shadow: 0 -1px 1px #3333;
   }
   .menu{
     padding-left: 10px;
@@ -163,8 +164,9 @@
     text-decoration: underline;
   }
 </style>
-<script src="https://unpkg.com/vue@2.5.17/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue@2.5.17/dist/vue.js"></script>
 </head>
+
 <body>
   <div id="app" class="main">
     <h1>TODO - VUE</h1>
@@ -173,14 +175,11 @@
       <div class="header inputCont">
         <div class="selectTop">
           <label :class='{allCompleted: allCompletedstyle, selectAll: true}'>
-            <input type="checkbox" id="allCompleted" class = 'selectAllInner'
-            :checked='isAllCompleted'
-            @click='allCompleted'>
+            <input type="checkbox" id="allCompleted" class='selectAllInner' :checked='isAllCompleted' @click='allCompleted'>
           </label>
         </div>
         <div class="inputTop">
-          <input id="userInput" type="text" placeholder="what needs to be dones?"
-          @keyup.enter="addTodo" v-model.trim='inputVal'>
+          <input id="userInput" type="text" placeholder="what needs to be dones?" @keyup.enter="addTodo" v-model.trim='inputVal'>
         </div>
       </div>
 
@@ -190,148 +189,157 @@
           <li v-for='(item, index) of showItems' :key="item.id" :class='{iscompleted: item.done}'>
             <label><input type="checkbox" :checked='item.done' v-model='item.done'></label>
             <p class="content" @dblclick='editContent(index)' v-show='!isEditing(index)'>{{item.content}}</p>
-            <input type="text" class="changeText" 
-            v-if='isEditing(index)' 
-            v-model='item.content'
-            @blur='saveEditing(item)' 
-            @keyup.enter='saveEditing(item)'
-            v-focus>
+            <input type="text" class="changeText" v-if='isEditing(index)' v-model='item.content' @blur='saveEditing(item)'
+              @keyup.enter='saveEditing(item)' v-focus>
             <span class="delete" @click='deleteItem(item)'> X </span>
           </li>
         </ul>
       </div>
 
 
-              <!-- 选项栏 -->
-              <div class="menu">
-                <!-- <div class="leftItems"> -->
-                  <span class="itemsLeft">{{leftItemsNum}}</span>
-                  item<span>{{itemPlural}} </span> left
-                  <!-- </div> -->
-                  <!-- <div class="selectMenu"> -->
-                    <label><input type="radio" v-model='itemCategory' value="all" class="showAll">All</label>
-                    <label><input type="radio" v-model='itemCategory' value="active" class="showActive">Active</label>
-                    <label><input type="radio" v-model='itemCategory' value="completed" class="showCompleted">Completed</label>
-                    <!-- </div> -->
-                    <!-- <div class="clearAll"> -->
-                      <a href="javascript:" class="clearCompleted" v-show='showClearAllComp' @click='clearAllComp'>clearCom...</a>
-                      <!-- <button v-show='showClearAllComp' @click='clearAllComp'>clearAllCompleted</button> -->
-                      <!-- </div> -->
-                    </div>
-                  </div>
-                </div>
+      <!-- 选项栏 -->
+      <div class="menu">
+        <!-- <div class="leftItems"> -->
+        <span class="itemsLeft">{{leftItemsNum}}</span>
+        item<span>{{itemPlural}} </span> left
+        <!-- </div> -->
+        <!-- <div class="selectMenu"> -->
+        <label><input type="radio" v-model='itemCategory' value="all" class="showAll">All</label>
+        <label><input type="radio" v-model='itemCategory' value="active" class="showActive">Active</label>
+        <label><input type="radio" v-model='itemCategory' value="completed" class="showCompleted">Completed</label>
+        <!-- </div> -->
+        <!-- <div class="clearAll"> -->
+        <a href="javascript:" class="clearCompleted" v-show='showClearAllComp' @click='clearAllComp'>clearCom...</a>
+        <!-- <button v-show='showClearAllComp' @click='clearAllComp'>clearAllCompleted</button> -->
+        <!-- </div> -->
+      </div>
+    </div>
+  </div>
 
   <script>
-                  Vue.directive('focus', {
-          // 当被绑定的元素插入到 DOM 中时……
-          inserted: function (el) {
-            // 聚焦元素
-            el.focus()
-          }
-        })
+    Vue.directive('focus', {
+      // 当被绑定的元素插入到 DOM 中时……
+      inserted: function (el) {
+        // 聚焦元素
+        el.focus()
+      }
+    })
 
 
-                  let vm = new Vue({
-                    el: '#app',
-                    data: {
-                      items: [],
-                inputVal: '',
-                itemCategory: 'all',
-                editing: -1
-              },
-              methods: {
-                addTodo () {
-                  console.log('addTodo')
-                  if (this.inputVal) {
-                    this.items.push({
-                      id: Number(new Date()),
-                      content: this.inputVal,
-                      done: false
-                    })
-                    this.inputVal = ''
-                  }
-                },
-                deleteItem (item) {
-                  console.log('deleteItem')
-                  let index = this.items.indexOf(item)
-                  this.items.splice(index, 1)
-                },
-                clearAllComp () {
-                  this.items = this.items.filter(it => !it.done)
-                },
-                allCompleted () {
-                  if (this.isAllCompleted) {
-                    this.items.forEach(it => it.done = false)
-                  } else {
-                    this.items.forEach(it => it.done = true)
-                  }
-                },
-                editContent (index) {
-                  if (this.editing == -1) {
-                    this.editing = index
-                  }
-                },
-                isEditing (index) {
-                  return index == this.editing
-                },
-                saveEditing (item) {
-                  let str = item.content.trim()
-                  if (str) {
-                    this.editing = -1
-                  }
-                }
-
-              },
-              computed: {
-                showItems () {
-                    // this.items
-                    if (this.itemCategory == 'active') { 
-                      console.log('computed active')
-                      return this.items.filter(it => it.done == false)
-                        // return this.items.filter(it => !it.done)
-                      } else if (this.itemCategory == 'completed') {
-                        console.log('computed completed')
-                        return this.items.filter(it => it.done)
-                      } else { 
-                        console.log('computed all')
-                        return this.items
-                      }
-                    },
-                    leftItemsNum () {
-                      return this.items.filter(it => !it.done).length
-                    },
-                    itemPlural () {
-                      return this.items.filter(it => !it.done).length > 1 ? 's' : ' '
-                    },
-                    showClearAllComp () {
-                      return this.items.filter(it => it.done).length > 0
-                    },
-                    isAllCompleted () {
-                      return this.items.every(it => it.done) && this.items.length > 0
-                    },
-                // 响应selectAll 样式
-                allCompletedstyle () {
-                  return this.items.every(it => it.done) && this.items.length > 0
-                }
-                
-              },
-              watch: {
-                items: {
-                  deep: true,
-                  handler () {
-                    console.log('%c items is changing...','background:#000;color:yellow')
-                    window.localStorage.setItem('todos', JSON.stringify(this.items))
-                  }
-                }
-              },
-              mounted () {
-                let store = window.localStorage.getItem('todos')
-
-                if (window.localStorage.getItem('todos')) {
-                  this.items = JSON.parse(store)
-                }
-              }
+    let vm = new Vue({
+      el: '#app',
+      data: {
+        items: [{
+              id: 1,
+              content: 'eat',
+              done: true},{
+              id: 1,
+              content: 'study',
+              done: true},{
+              id: 1,
+              content: 'play',
+              done: false},{
+              id: 1,
+              content: 'sleep',
+              done: false},],
+        inputVal: '',
+        itemCategory: 'all',
+        editing: -1
+      },
+      methods: {
+        addTodo() {
+          console.log('addTodo')
+          if (this.inputVal) {
+            this.items.push({
+              id: Number(new Date()),
+              content: this.inputVal,
+              done: false
             })
+            this.inputVal = ''
+          }
+        },
+        deleteItem(item) {
+          console.log('deleteItem')
+          let index = this.items.indexOf(item)
+          this.items.splice(index, 1)
+        },
+        clearAllComp() {
+          this.items = this.items.filter(it => !it.done)
+        },
+        allCompleted() {
+          if (this.isAllCompleted) {
+            this.items.forEach(it => it.done = false)
+          } else {
+            this.items.forEach(it => it.done = true)
+          }
+        },
+        editContent(index) {
+          if (this.editing == -1) {
+            this.editing = index
+          }
+        },
+        isEditing(index) {
+          return index == this.editing
+        },
+        saveEditing(item) {
+          let str = item.content.trim()
+          if (str) {
+            this.editing = -1
+          }
+        }
+
+      },
+      computed: {
+        showItems() {
+          // this.items
+          if (this.itemCategory == 'active') {
+            console.log('computed active')
+            return this.items.filter(it => it.done == false)
+            // return this.items.filter(it => !it.done)
+          } else if (this.itemCategory == 'completed') {
+            console.log('computed completed')
+            return this.items.filter(it => it.done)
+          } else {
+            console.log('computed all')
+            return this.items
+          }
+        },
+        leftItemsNum() {
+          return this.items.filter(it => !it.done).length
+        },
+        itemPlural() {
+          return this.items.filter(it => !it.done).length > 1 ? 's' : ' '
+        },
+        showClearAllComp() {
+          return this.items.filter(it => it.done).length > 0
+        },
+        isAllCompleted() {
+          return this.items.every(it => it.done) && this.items.length > 0
+        },
+        // 响应selectAll 样式
+        allCompletedstyle() {
+          return this.items.every(it => it.done) && this.items.length > 0
+        }
+
+      },
+      watch: {
+        items: {
+          deep: true,
+          handler() {
+            console.log('%c items is changing...', 'background:#000;color:yellow')
+            window.localStorage.setItem('todos', JSON.stringify(this.items))
+          }
+        }
+      },
+      mounted() {
+        let store = window.localStorage.getItem('todos')
+
+        if (window.localStorage.getItem('todos')) {
+          this.items = JSON.parse(store)
+        }
+      }
+    })
   </script>
 </body>
+
 </html>
